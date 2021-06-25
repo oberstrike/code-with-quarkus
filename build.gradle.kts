@@ -1,7 +1,9 @@
 plugins {
     kotlin("jvm") version "1.4.32"
     kotlin("plugin.allopen") version "1.4.32"
+    kotlin("kapt") version "1.4.32"
     id("io.quarkus")
+
 }
 
 repositories {
@@ -14,6 +16,10 @@ val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 
 dependencies {
+    kapt("org.mapstruct:mapstruct-processor:1.4.2.Final")
+    implementation("org.mapstruct:mapstruct:1.4.2.Final")
+
+
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
     implementation("io.quarkus:quarkus-grpc")
@@ -27,7 +33,7 @@ dependencies {
     testImplementation("io.rest-assured:rest-assured")
 }
 
-group = "org.acme"
+group = "de.ma"
 version = "1.0.0-SNAPSHOT"
 
 java {
@@ -39,9 +45,19 @@ allOpen {
     annotation("javax.ws.rs.Path")
     annotation("javax.enterprise.context.ApplicationScoped")
     annotation("io.quarkus.test.junit.QuarkusTest")
+    annotation("javax.persistence.Entity")
+
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
     kotlinOptions.javaParameters = true
+}
+
+quarkus {
+    setOutputDirectory("$projectDir/build/classes/kotlin/main")
+}
+
+tasks.withType<io.quarkus.gradle.tasks.QuarkusDev> {
+    setSourceDir("$projectDir/src/main/kotlin")
 }
